@@ -24,7 +24,13 @@ jobs:
         run: |
           LATEST_KREMS_URL="https://github.com/mreider/krems/releases/latest/download/krems-linux-amd64"
           echo "Downloading Krems from $LATEST_KREMS_URL"
-          curl -sSL -o krems "$LATEST_KREMS_URL"
+          curl -LfsS -o krems "$LATEST_KREMS_URL"
+          if [ ! -s krems ] || ! file krems | grep -q "executable"; then
+            echo "Error: Downloaded krems file is empty or not an executable."
+            echo "Contents of downloaded file (first 10 lines):"
+            head -n 10 krems
+            exit 1
+          fi
           chmod +x ./krems
           echo "Krems version from downloaded release: $(./krems --version || echo 'version flag not supported or krems not executable')"
 
@@ -36,7 +42,7 @@ jobs:
       - name: Run Krems to build website
         run: |
           set -e
-          echo "Building website with locally built Krems..."
+          echo "Building website with downloaded Krems..."
           ./krems --build 
           echo "Website built. Contents of ./public:"
           ls -R public
