@@ -44,8 +44,8 @@ jobs:
           set -e
           echo "Building website with downloaded Krems..."
           ./krems --build 
-          echo "Website built. Contents of ./public:"
-          ls -R public
+          echo "Website built. Contents of ./docs:"
+          ls -R docs
 
       - name: Generate CNAME file for custom domain (if applicable)
         run: |
@@ -78,18 +78,18 @@ jobs:
           
           if [ -n "$DOMAIN_FOR_CNAME" ]; then
             echo "Custom domain for CNAME detected: $DOMAIN_FOR_CNAME"
-            echo "$DOMAIN_FOR_CNAME" > public/CNAME
-            echo "CNAME file created in public/ with content: $DOMAIN_FOR_CNAME"
+            echo "$DOMAIN_FOR_CNAME" > docs/CNAME
+            echo "CNAME file created in docs/ with content: $DOMAIN_FOR_CNAME"
           else
             echo "Not a custom domain or URL not parsable for CNAME. No CNAME file generated. Removing if exists."
-            rm -f public/CNAME
+            rm -f docs/CNAME
           fi
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./docs
           publish_branch: gh-pages 
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
