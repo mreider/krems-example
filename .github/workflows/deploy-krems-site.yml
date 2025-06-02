@@ -38,6 +38,31 @@ jobs:
         run: |
           git config user.name "GitHub Action Bot"
           git config user.email "actions@github.com"
+
+      - name: Workaround - Align devPath with basePath in config.yaml
+        # This step is a workaround assuming the downloaded Krems binary might be an older version
+        # where the --build flag incorrectly uses devPath. By setting devPath = basePath,
+        # we ensure the correct paths are used regardless of the Krems binary version.
+        run: |
+          if [ ! -f config.yaml ]; then
+            echo "config.yaml not found, skipping devPath alignment."
+            exit 0
+          fi
+          echo "Attempting to align devPath with basePath in config.yaml..."
+          # Extract basePath value, handling optional quotes and whitespace
+          BASE_PATH_VALUE=$(grep '^  basePath:' config.yaml | sed -E "s/^  basePath: *['\"]?([^'\"]*)['\"]?/\1/")
+
+          if [ -z "$BASE_PATH_VALUE" ]; then
+            echo "Could not extract basePath from config.yaml. Skipping devPath alignment."
+          else
+            echo "Extracted basePath: $BASE_PATH_VALUE"
+            # Replace devPath line. This command replaces the whole line starting with "  devPath:".
+            # It ensures the new devPath is quoted.
+            # Using a temporary file for sed -i compatibility (though GH runners are Linux and usually support -i directly)
+            sed "s|^  devPath:.*|  devPath: \"${BASE_PATH_VALUE}\"|" config.yaml > config.yaml.tmp && mv config.yaml.tmp config.yaml
+            echo "Updated config.yaml with devPath aligned to basePath:"
+            grep "devPath:" config.yaml || echo "devPath line not found after update attempt."
+          fi
           
       - name: Run Krems to build website
         run: |
