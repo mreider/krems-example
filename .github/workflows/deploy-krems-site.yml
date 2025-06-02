@@ -20,16 +20,13 @@ jobs:
         with:
           fetch-depth: 0 # Important for committing back config.yaml
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21' # Specify your Go version
-
-      - name: Build Krems from source
+      - name: Download latest Krems release
         run: |
-          go build -o krems .
+          LATEST_KREMS_URL="https://github.com/mreider/krems/releases/latest/download/krems-linux-amd64"
+          echo "Downloading Krems from $LATEST_KREMS_URL"
+          curl -sSL -o krems "$LATEST_KREMS_URL"
           chmod +x ./krems
-          echo "Krems version from source: $(./krems --version || echo 'version flag not supported or krems not executable')"
+          echo "Krems version from downloaded release: $(./krems --version || echo 'version flag not supported or krems not executable')"
 
       - name: Configure Git User
         run: |
