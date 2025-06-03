@@ -18,4 +18,4 @@ jobs:
           fetch-depth: 0
 
       - name: Build and Deploy with Krems
-        uses: mreider/krems-deploy-action@v0.1.3
+        uses: mreider/krems-deploy-action@v0.1.4
