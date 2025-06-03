@@ -1,0 +1,11 @@
+website:
+  url: "https://mreider.github.io/krems-example"
+  name: "Krems Example Site"
+  basePath: "/krems-example"
+  devPath: "/krems-example"
+
+menu:
+  - title: "Home"
+    path: "index.md"
+  - title: "Universities"
+    path: "universities/index.md"
